@@ -1,0 +1,33 @@
+name: Publish Docker Image to Docker Hub
+
+on:
+  push:
+    branches:
+      - main # Trigger on pushes to the main branch
+  workflow_dispatch: # Allows manual triggering from the GitHub UI
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: [actions/checkout](https://github.com)@v4
+
+    - name: Login to Docker Hub
+      uses: [docker/login-action](https://github.com)@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }} # Stored as a GitHub secret
+        password: ${{ secrets.DOCKER_PASSWORD }} # Stored as a GitHub secret
+
+    - name: Set up Docker Buildx
+      uses: [docker/setup-buildx-action](https://github.com)@v3
+
+    - name: Build and push Docker image
+      uses: [docker/build-push-action](https://github.com)@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/my-image-repo:latest # Replace with your repo name and desired tag
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
